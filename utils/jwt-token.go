@@ -18,7 +18,7 @@ type UserToken struct {
 
 var secretKey = []byte("kieir9c")
 
-func SignToken(user *models.UsersTable) (string, error) {
+func SignToken(user *models.Users) (string, error) {
 	fmt.Println("secretKey =", secretKey)
 	claems := &UserToken{
 		Id:       user.Id,

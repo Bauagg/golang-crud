@@ -1,6 +1,6 @@
 package models
 
-type Product struct {
+type Products struct {
 	Id          *uint32 `json:"id"`
 	NameProduct *string `json:"name_product"`
 	Stock       *uint16 `json:"stock"`

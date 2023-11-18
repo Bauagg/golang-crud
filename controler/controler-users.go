@@ -10,7 +10,7 @@ import (
 )
 
 func Register(ctx *gin.Context) {
-	users := new(models.UsersTable)
+	users := new(models.Users)
 	usersRequire := new(models.CreateRegisterUser)
 
 	if errReq := ctx.ShouldBind(&usersRequire); errReq != nil {
@@ -79,7 +79,7 @@ func Register(ctx *gin.Context) {
 }
 
 func Login(ctx *gin.Context) {
-	users := new(models.UsersTable)
+	users := new(models.Users)
 	userRequest := new(models.CretateLoginUser)
 	usersLogin := new(models.UserGetLogin)
 

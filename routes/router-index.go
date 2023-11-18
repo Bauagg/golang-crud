@@ -33,4 +33,7 @@ func RouterIndex(app *gin.Engine) {
 	router.DELETE("/cart/:id", controler.DeleteCart)
 
 	// router invoice
+	router.GET("/invoice", midelware.AuthMidelware(), controler.GetInvoice)
+	router.POST("/invoice", midelware.AuthMidelware(), controler.CreateInvoice)
+	router.PUT("/invoice/:id", midelware.AuthMidelware(), controler.UpdateInvoice)
 }

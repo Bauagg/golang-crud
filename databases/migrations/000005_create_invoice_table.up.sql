@@ -1,9 +1,10 @@
-CREATE TABLE carts(
+CREATE TABLE invoice(
   	id INT AUTO_INCREMENT PRIMARY KEY,
-	id_product INT NOT NULL,  
-  	quantity INT NOT NULL, 
-  	price_total INT NOT NULL,
+	id_cart INT NOT NULL,  
+  	diskon INT, 
+  	id_address INT NOT NULL,
 	user_id INT NOT NULL,
+    price_total_invoice INT NOT NULL,
 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );

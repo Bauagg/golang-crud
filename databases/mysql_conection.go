@@ -22,10 +22,3 @@ func InitMysql() {
 
 	log.Println("Connection databases success")
 }
-
-// func CloseMysql() {
-// 	if DB != nil {
-// 		sqlDb, _ := DB.DB()
-// 		sqlDb.Close()
-// 	}
-// }

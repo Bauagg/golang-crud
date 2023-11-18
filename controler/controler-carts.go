@@ -2,15 +2,23 @@ package controler
 
 import (
 	"belajar-api-goleng/databases"
+	"belajar-api-goleng/midelware"
 	"belajar-api-goleng/models"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 func GetCarts(ctx *gin.Context) {
-	carts := new([]models.CartsTabel)
+	carts := new([]models.Carts)
 
-	errDb := databases.DB.Table("carts").Find(&carts).Error
+	errDb := databases.DB.Table("carts").
+		Where("user_id = ?", midelware.UserId).
+		Preload("Products").
+		Preload("Users", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id", "username", "email", "role")
+		}).
+		Find(&carts).Error
 	if errDb != nil {
 		ctx.JSON(500, gin.H{
 			"error":   true,
@@ -27,9 +35,9 @@ func GetCarts(ctx *gin.Context) {
 }
 
 func CreateCart(ctx *gin.Context) {
-	cart := new(models.CartsTabel)
+	cart := new(models.Carts)
 	payloadCart := new(models.PayloadCart)
-	product := new(models.Product)
+	product := new(models.Products)
 
 	if errReq := ctx.ShouldBind(&payloadCart); errReq != nil {
 		ctx.JSON(500, gin.H{
@@ -61,6 +69,7 @@ func CreateCart(ctx *gin.Context) {
 	cart.IdProduct = &payloadCart.IdProduct
 	cart.Quantity = &payloadCart.Quantity
 	cart.PriceTotal = &total
+	cart.UserId = midelware.UserId
 
 	errDB := databases.DB.Table("carts").Create(&cart).Error
 	if errDB != nil {
@@ -81,8 +90,8 @@ func CreateCart(ctx *gin.Context) {
 func UpdateCart(ctx *gin.Context) {
 	id := ctx.Param("id")
 	payloadCart := new(models.PayloadCart)
-	product := new(models.Product)
-	cart := new(models.CartsTabel)
+	product := new(models.Products)
+	cart := new(models.Carts)
 
 	if errReques := ctx.ShouldBind(&payloadCart); errReques != nil {
 		ctx.JSON(500, gin.H{
@@ -109,17 +118,11 @@ func UpdateCart(ctx *gin.Context) {
 		return
 	}
 
-	total := uint64(*product.Price) * uint64(payloadCart.Quantity)
-
-	cart.IdProduct = &payloadCart.IdProduct
-	cart.Quantity = &payloadCart.Quantity
-	cart.PriceTotal = &total
-
-	errDb := databases.DB.Table("carts").Where("id = ?", id).Updates(&cart).Error
-	if errDb != nil {
+	errIdcart := databases.DB.Table("carts").Where("id = ?", id).Find(&cart).Error
+	if errIdcart != nil {
 		ctx.JSON(500, gin.H{
 			"error":   true,
-			"message": "update data cart error",
+			"message": "internal cart by id server error",
 		})
 		return
 	}
@@ -128,6 +131,22 @@ func UpdateCart(ctx *gin.Context) {
 		ctx.JSON(404, gin.H{
 			"error":   true,
 			"message": "get data cart by id not found",
+		})
+		return
+	}
+
+	total := uint64(*product.Price) * uint64(payloadCart.Quantity)
+
+	cart.IdProduct = &payloadCart.IdProduct
+	cart.Quantity = &payloadCart.Quantity
+	cart.PriceTotal = &total
+	cart.UserId = midelware.UserId
+
+	errDb := databases.DB.Table("carts").Where("id = ?", id).Updates(&cart).Error
+	if errDb != nil {
+		ctx.JSON(500, gin.H{
+			"error":   true,
+			"message": "update data cart error",
 		})
 		return
 	}
@@ -141,7 +160,7 @@ func UpdateCart(ctx *gin.Context) {
 
 func DeleteCart(ctx *gin.Context) {
 	id := ctx.Param("id")
-	cart := new(models.CartsTabel)
+	cart := new(models.Carts)
 
 	errIdcart := databases.DB.Table("carts").Where("id = ?", id).Find(&cart).Error
 	if errIdcart != nil {

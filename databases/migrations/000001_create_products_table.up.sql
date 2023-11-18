@@ -10,4 +10,4 @@ CREATE TABLE products(
 
 -- migrate -database "mysql://root:root@tcp(127.0.0.1:3306)/databases-golang?query" -path databases/migrations up
 
--- migrate create -ext sql -dir db/migrations -seq create_users_table
+-- migrate create -ext sql -dir databases/migrations -seq create_users_table

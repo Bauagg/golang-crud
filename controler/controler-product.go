@@ -8,7 +8,7 @@ import (
 )
 
 func GetProduct(ctx *gin.Context) {
-	product := new([]models.Product)
+	product := new([]models.Products)
 	search := databases.DB.Table("products")
 
 	productName := ctx.Query("name")
@@ -35,7 +35,7 @@ func GetProduct(ctx *gin.Context) {
 
 func GetProductById(ctx *gin.Context) {
 	id := ctx.Param("id")
-	product := new(models.Product)
+	product := new(models.Products)
 
 	err := databases.DB.Table("products").Where("id = ?", id).Find(&product).Error
 	if err != nil {
@@ -72,7 +72,7 @@ func CreateProduct(ctx *gin.Context) {
 		return
 	}
 
-	product := new(models.Product)
+	product := new(models.Products)
 	product.NameProduct = &productReques.NameProduct
 	product.Stock = &productReques.Stock
 	product.Price = &productReques.Price
@@ -96,7 +96,7 @@ func CreateProduct(ctx *gin.Context) {
 
 func UpdateProduct(ctx *gin.Context) {
 	id := ctx.Param("id")
-	product := new(models.Product)
+	product := new(models.Products)
 	productReques := new(models.CreateProduct)
 
 	if errReques := ctx.ShouldBind(&productReques); errReques != nil {
@@ -147,7 +147,7 @@ func UpdateProduct(ctx *gin.Context) {
 
 func DeleteProduct(ctx *gin.Context) {
 	id := ctx.Param("id")
-	product := new(models.Product)
+	product := new(models.Products)
 	errDb := databases.DB.Table("products").Where("id = ?", id).Find(&product).Error
 	if errDb != nil {
 		ctx.JSON(500, gin.H{
